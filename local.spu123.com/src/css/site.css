@@ -1,0 +1,6 @@
+/*Imports*/
+
+/*Import Tailwind*/
+@import url('/src/css/tailwind.css');
+/*Import custom styles*/
+@import url('/src/css/styles.css');

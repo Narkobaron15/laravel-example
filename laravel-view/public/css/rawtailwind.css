@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    header {
+        @apply mb-8;
+    }
+
+    main {
+        @apply container mx-auto;
+    }
+    
+    h1 {
+        @apply text-center text-5xl font-bold mb-10;
+    }
+
+    table {
+        @apply table-auto w-full text-center;
+    }
+}
+
+@layer components {}
+
+@layer utilities {}
