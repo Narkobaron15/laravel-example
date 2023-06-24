@@ -7,6 +7,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Nette\Schema\ValidationException;
+use Validator;
 
 /**
  * @OA\Info(
@@ -25,19 +26,6 @@ use Nette\Schema\ValidationException;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
-
-
-    // category validation rules
-    protected array $categoryRules= [
-        'name' => 'required|string|max:200',
-        'image' => 'required|string|max:300',
-        'description' => 'required|string|max:4000',
-    ];
-
-    protected function getValidatedData(Request $request, Array $rules): array
-    {
-        return $request->validate($rules);
-    }
 
     protected function jsonresponse($data, int $status = 200): \Illuminate\Http\JsonResponse
     {
