@@ -1,44 +1,21 @@
 import React from 'react';
-import { useEffect } from 'react';
-import axios from 'axios';
+import { Route, Routes } from 'react-router-dom';
 
-const requestItems = () => {
-  axios.get('http://laravel.spu123.com/api/categories')
-       .then(r => console.log(r.data));
-};
 
-function App() {
-  useEffect(requestItems, []);
-  
+import CategoryList from './components/category/read/categorylist';
+import Layout from './components/layout';
+import HomeComponent from './components/home';
+import CreateCategory from './components/category/create/createcategory';
+
+export default function App() {
+
   return (
-    <>
-      <header>
-
-      </header>
-      <main>
-        <h1>Привіт козаки</h1>
-        
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Назва</th>
-              <th>Фото</th>
-              <th>Опис</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>фіваф</td>
-              <td>фівафіа</td>
-              <td>фіва</td>
-            </tr>
-          </tbody>
-        </table>
-      </main>
-    </>
+    <Routes>
+      <Route path='/' element={<Layout/>}>
+        <Route index element={<HomeComponent />}/>
+        <Route path='all' element={<CategoryList />}/>
+        <Route path='create' element={<CreateCategory />}/>
+      </Route>
+    </Routes>
   );
 }
-
-export default App;
