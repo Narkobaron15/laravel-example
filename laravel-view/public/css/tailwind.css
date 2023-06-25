@@ -933,6 +933,14 @@ form button:focus {
   }
 }
 
+.error-text {
+  margin-bottom: 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  --tw-text-opacity: 1;
+  color: rgb(220 38 38 / var(--tw-text-opacity));
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

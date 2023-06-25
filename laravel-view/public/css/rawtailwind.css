@@ -60,6 +60,10 @@
     .title-logo {
         @apply self-center text-2xl font-semibold whitespace-nowrap dark:text-white;
     }
+
+    .error-text {
+        @apply text-red-600 text-lg -mb-4 mb-6;
+    }
 }
 
 @layer utilities {
