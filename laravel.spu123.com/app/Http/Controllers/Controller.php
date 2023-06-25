@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
-use Nette\Schema\ValidationException;
-use Validator;
 
 /**
  * @OA\Info(
@@ -27,9 +25,12 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    protected function jsonresponse($data, int $status = 200): \Illuminate\Http\JsonResponse
+    protected function JsonResponse($data, int $status = 200): JsonResponse
     {
         return response()->json($data, $status,
             ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_UNESCAPED_UNICODE);
+    }
+    protected function ModelNotFoundResponse() : JsonResponse {
+        return $this->JsonResponse(['message' => 'Not found', "status" => 404], 404);
     }
 }

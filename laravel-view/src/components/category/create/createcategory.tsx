@@ -2,7 +2,6 @@ import React from "react"
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 
-import APP_ENV from "../../../env/app_env";
 import ICategoryItem from "../../../models/category";
 import http_common from "../../../http_common";
 

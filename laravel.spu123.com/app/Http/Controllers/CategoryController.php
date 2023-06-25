@@ -3,15 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use http\Message;
-use Illuminate\Contracts\Support\Jsonable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use mysql_xdevapi\Exception;
-use Nette\Schema\ValidationException;
 use Validator;
 
 class CategoryController extends Controller
 {
+    private function ValidateCategory(Request $request) {
+        $input = $request->all();
+        $message = [
+            'name.required'=>'Вкажіть назву категорії',
+            'image.required'=>'Вкажіть фото категорії',
+            'description.required'=>'Вкажіть опис категорії'
+        ];
+        return Validator::make($input,[
+            'name'=>'required',
+            'image'=>'required',
+            'description'=>'required',
+        ],$message);
+    }
+
     /**
      * @OA\Get(
      *     tags={"Category"},
@@ -19,10 +31,10 @@ class CategoryController extends Controller
      *     @OA\Response(response="200", description="List Categories.")
      * )
      */
-    public function index(): \Illuminate\Http\JsonResponse
+    public function index(): JsonResponse
     {
         $list = Category::all();
-        return $this->jsonresponse($list);
+        return $this->JsonResponse($list);
     }
 
     /**
@@ -52,24 +64,15 @@ class CategoryController extends Controller
      *     @OA\Response(response="201", description="Added a new category")
      * )
      */
-    public function create(Request $request) {
-        $input = $request->all();
-        $message = [
-            'name.required'=>'Вкажіть назву категорії',
-            'image.required'=>'Вкажіть фото категорії',
-            'description.required'=>'Вкажіть опис категорії'
-        ];
-        $validation = Validator::make($input,[
-            'name'=>'required',
-            'image'=>'required',
-            'description'=>'required',
-        ],$message);
+    public function create(Request $request): JsonResponse
+    {
+        $validation = $this->ValidateCategory($request);
         if($validation->fails()){
-            return $this->jsonresponse($validation->errors(), 400);
+            return $this->JsonResponse($validation->errors(), 400);
         }
 
-        $category = Category::create($input);
-        return $this->jsonresponse($category, 201);
+        $category = Category::create($request->all());
+        return $this->JsonResponse($category, 201);
     }
 
     /**
@@ -96,9 +99,15 @@ class CategoryController extends Controller
      *     )
      * )
      */
-    public function getById($id) {
-        $category = Category::findOrFail($id);
-        return $this->jsonresponse($category);
+    public function getById($id): JsonResponse
+    {
+        try {
+            $category = Category::findOrFail($id);
+            return $this->JsonResponse($category);
+        }
+        catch (ModelNotFoundException) {
+            return $this->ModelNotFoundResponse();
+        }
     }
 
     /**
@@ -138,24 +147,22 @@ class CategoryController extends Controller
      *     @OA\Response(response="200", description="Edited Category")
      * )
      */
-    public function put($id, Request $request) {
-        $category = Category::findOrFail($id);
-        $input = $request->all();
-        $message = [
-            'name.required'=>'Вкажіть назву категорії',
-            'image.required'=>'Вкажіть фото категорії',
-            'description.required'=>'Вкажіть опис категорії'
-        ];
-        $validation = Validator::make($input,[
-            'name'=>'required',
-            'image'=>'required',
-            'description'=>'required',
-        ],$message);
-        if($validation->fails()){
-            return $this->jsonresponse($validation->errors(), 400);
+    public function put($id, Request $request): JsonResponse
+    {
+        try {
+            $category = Category::findOrFail($id);
+
+            $validation = $this->ValidateCategory($request);
+            if($validation->fails()){
+                return $this->JsonResponse($validation->errors(), 400);
+            }
+
+            $category->update($request->all());
+            return $this->JsonResponse($category);
         }
-        $category->update($input);
-        return $this->jsonresponse($category);
+        catch (ModelNotFoundException) {
+            return $this->ModelNotFoundResponse();
+        }
     }
 
     /**
@@ -186,9 +193,15 @@ class CategoryController extends Controller
      *     )
      * )
      */
-    public function delete($id) {
-        $category = Category::findOrFail($id);
-        $category->delete();
-        return $this->jsonresponse("Ok");
+    public function delete($id): JsonResponse
+    {
+        try {
+            $category = Category::findOrFail($id);
+            $category->delete();
+            return $this->JsonResponse("Ok");
+        }
+        catch (ModelNotFoundException) {
+            return $this->ModelNotFoundResponse();
+        }
     }
 }
