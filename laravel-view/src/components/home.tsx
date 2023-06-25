@@ -5,5 +5,5 @@ export default function HomeComponent() {
         <>
             <h1>Привіт козаки!</h1>
         </>
-    )
+    );
 }

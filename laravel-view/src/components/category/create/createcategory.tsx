@@ -1,6 +1,6 @@
-import React from "react"
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form, Field, FormikErrors, FormikTouched } from "formik";
 
 import ICategoryItem, { categorySchema } from "../../../models/category";
 import http_common from "../../../http_common";
@@ -10,7 +10,17 @@ const emptyCategory: ICategoryItem = {
     name: '',
     image: '',
     description: '',
-}
+};
+
+// for error displaying
+const getErrorComponents = (
+    errors: FormikErrors<ICategoryItem>,
+    touched: FormikTouched<ICategoryItem>,
+    field: keyof ICategoryItem /* "id" | "name" | "image" | "description" */) => {
+    return errors[field] && touched[field]
+        ? <div className="error-text">{errors[field]}</div>
+        : null;
+};
 
 export default function CreateCategory() {
     // used for redirecting after successful form submit
@@ -48,14 +58,12 @@ export default function CreateCategory() {
                             />
                         </div>
                     </div>
-                    {/* 
-                      * if any errors were registered,
-                      * the error message will be shown
-                      */}
                     {
-                        errors.name && touched.name
-                            ? <div className="error-text">{errors.name}</div>
-                            : null
+                        /* 
+                         * if any errors were registered,
+                         * the error message will be shown
+                         */
+                        getErrorComponents(errors, touched, "name")
                     }
                     <div className="form-group">
                         <div className="md:w-1/3">
@@ -70,11 +78,7 @@ export default function CreateCategory() {
                             />
                         </div>
                     </div>
-                    {
-                        errors.image && touched.image
-                            ? <div className="error-text">{errors.image}</div>
-                            : null
-                    }
+                    {getErrorComponents(errors, touched, "image")}
                     <div className="form-group">
                         <div className="md:w-1/3">
                             <label htmlFor="description">Опис</label>
@@ -88,11 +92,7 @@ export default function CreateCategory() {
                             />
                         </div>
                     </div>
-                    {
-                        errors.description && touched.description
-                            ? <div className="error-text">{errors.description}</div>
-                            : null
-                    }
+                    {getErrorComponents(errors, touched, "description")}
                     <div className="flex justify-center">
                         <button type="submit">Додати</button>
                     </div>
