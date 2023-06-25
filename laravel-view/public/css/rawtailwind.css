@@ -24,7 +24,7 @@
     }
 
     form label {
-        @apply block text-gray-500 font-bold md:text-right mb-1 md:mb-0 pr-4;
+        @apply block text-gray-500 font-bold md:text-left mb-1 md:mb-0 pr-4;
     }
 }
 
@@ -62,7 +62,7 @@
     }
 
     .error-text {
-        @apply text-red-600 text-lg -mb-4 mb-6;
+        @apply text-red-600 -mt-3 mb-6;
     }
 }
 

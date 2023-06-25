@@ -46,10 +46,10 @@ export default function CreateCategory() {
             {({ errors, touched }) => (
                 <Form className="mx-auto">
                     <div className="form-group">
-                        <div className="md:w-1/3">
+                        <div className="md:w-2/12">
                             <label htmlFor="name">Назва</label>
                         </div>
-                        <div className="md:w-2/3">
+                        <div className="md:w-10/12">
                             <Field
                                 id="name"
                                 name="name"
@@ -66,10 +66,10 @@ export default function CreateCategory() {
                         getErrorComponents(errors, touched, "name")
                     }
                     <div className="form-group">
-                        <div className="md:w-1/3">
+                        <div className="md:w-2/12">
                             <label htmlFor="image">Зображення</label>
                         </div>
-                        <div className="md:w-2/3">
+                        <div className="md:w-10/12">
                             <Field
                                 id="image"
                                 name="image"
@@ -80,10 +80,10 @@ export default function CreateCategory() {
                     </div>
                     {getErrorComponents(errors, touched, "image")}
                     <div className="form-group">
-                        <div className="md:w-1/3">
+                        <div className="md:w-2/12">
                             <label htmlFor="description">Опис</label>
                         </div>
-                        <div className="md:w-2/3">
+                        <div className="md:w-10/12">
                             <Field
                                 id="description"
                                 name="description"
