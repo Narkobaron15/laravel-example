@@ -5,8 +5,14 @@ import Category from "./category";
 import http_common from "../../../http_common";
 
 const requestItems = (callback: Function) => {
-  http_common.get(`/api/categories`)
+  try {
+    http_common.get(`/api/categories`)
     .then(r => callback(r.data));
+  }
+  catch (err: any) {
+    callback([]);
+    console.error("Server error: " + err.message);
+  }
 };
 
 export default function CategoryList() {
