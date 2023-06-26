@@ -1,10 +1,15 @@
 <?php
-    $name="";
-    $email="";
-    $image="";
-    $password="";
+    $name = "";
+    $email = "";
+    $image = "";
+    $password = "";
 
+    // handling different http request methods is possible
+    // on the same page, in the same file
+
+    // handling HTTP POST Request
     if($_SERVER['REQUEST_METHOD'] == "POST") {
+        // extracting posted values if they are set
         if(isset($_POST['name']))
             $name=$_POST['name'];
         if(isset($_POST['email']))
@@ -13,18 +18,33 @@
             $image=$_POST['image'];
         if(isset($_POST['password']))
             $password=$_POST['password'];
+
+        // If all of them are filled,
         if(!empty($name) && !empty($image) && !empty($email) && !empty($password)) {
+            // the script imports DB connection handler object
             include $_SERVER["DOCUMENT_ROOT"] . '/connection_to_db.php';
+            // and executes sql request
             $sql = "INSERT INTO users(name, email, image, password) VALUES(?, ?, ?, ?);";
+            // if the handler is not null or unset.
             if(isset($dbh)) {
+                // Generating PDOStatement
                 $stmt = $dbh->prepare($sql);
+                // that will allow to execute SQL with injection
                 $stmt->execute([$name, $email, $image, $password]);
+
+                // Sets HTTP Response headers. Should be called before any HTML markup
+                // Location header inflicts further redirect
                 header('Location: /');
+
+                // 'exit' directive terminates program's execution,
+                // and is equivalent to 'die'
                 exit;
             }
         }
     }
 ?>
+
+<!-- Handling HTTP GET Request -->
 
 <!doctype html>
 <html lang="en">
@@ -38,9 +58,11 @@
 </head>
 
 <body>
+    <!-- Getting DB connection handler object (same as in index.php) -->
     <?php include $_SERVER["DOCUMENT_ROOT"] . '/connection_to_db.php'; ?>
 
     <header>
+        <!-- Displaying navbar (same as in index.php) -->
         <?php include $_SERVER["DOCUMENT_ROOT"] . '/navbar.php'; ?>
     </header>
 
@@ -64,7 +86,7 @@
                 <label for="image">Your image</label>
                 <input type="text" name="image" id="image" placeholder="Enter your pfp URL address..." required>
             </div>
-            <button type="submit" class="submitbtn">Submit</button>
+            <button type="submit" class="btn">Submit</button>
         </form>
     </main>
 
