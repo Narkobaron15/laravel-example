@@ -23,23 +23,13 @@
         if(!empty($name) && !empty($image) && !empty($email) && !empty($password)) {
             // the script imports DB connection handler object
             include $_SERVER["DOCUMENT_ROOT"] . '/connection_to_db.php';
+            global $dbh;
+
             // and executes sql request
-            $sql = "INSERT INTO users(name, email, image, password) VALUES(?, ?, ?, ?);";
             // if the handler is not null or unset.
-            if(isset($dbh)) {
-                // Generating PDOStatement
-                $stmt = $dbh->prepare($sql);
-                // that will allow to execute SQL with injection
-                $stmt->execute([$name, $email, $image, $password]);
-
-                // Sets HTTP Response headers. Should be called before any HTML markup
-                // Location header inflicts further redirect
-                header('Location: /');
-
-                // 'exit' directive terminates program's execution,
-                // and is equivalent to 'die'
-                exit;
-            }
+            $sql = "INSERT INTO users(name, email, image, password) VALUES(?, ?, ?, ?);";
+            include $_SERVER["DOCUMENT_ROOT"] . '/execsql.php';
+            ExecuteSql($dbh, $sql, [$name, $email, $image, $password]);
         }
     }
 ?>

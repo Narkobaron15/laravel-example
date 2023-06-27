@@ -74,10 +74,17 @@
                                 <td>$name</td>
                                 <td>$email</td>
                                 <td>
-                                <form method='post' action='/delete.php'>
-                                    <input type='hidden' value=$id name='id'>
-                                    <button class='btn btn-delete' type='submit'>Видалити</button>
-                                </form>
+                                    <div class='flex flex-row justify-center'>
+                                        <form method='post' action='/delete.php'>
+                                            <input type='hidden' value=$id name='id'>
+                                            <button class='btn btn-delete' type='submit'>
+                                                <i class='fa-solid fa-trash'></i>
+                                            </button>
+                                        </form>
+                                        <a class='btn ms-2' href='/update.php?id=$id'>
+                                            <i class='fa-solid fa-pen-to-square'></i>
+                                        </a>
+                                    </div>
                                 </td>
                               </tr>
                               ";
@@ -91,6 +98,7 @@
 
     </footer>
 
+    <script src="https://kit.fontawesome.com/fdf84415d1.js" crossorigin="anonymous"></script>
     <script src="/src/js/bootstrap.bundle.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
 </body>

@@ -1,7 +1,6 @@
 <nav class="navbar">
     <div class="navflex">
         <a href="/" class="flex items-center">
-            <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="Flowbite Logo" />
             <span>First PHP project</span>
         </a>
         <button data-collapse-toggle="navbar-default" type="button" class="navcollapse" aria-controls="navbar-default" aria-expanded="false">
