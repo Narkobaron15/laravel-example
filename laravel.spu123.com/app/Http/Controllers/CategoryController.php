@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Intervention\Image\Facades\Image;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -10,8 +11,8 @@ use Validator;
 
 class CategoryController extends Controller
 {
-    private function ValidateCategory(Request $request) {
-        $input = $request->all();
+    // Code for model validation
+    private function ValidateCategory(Array $input) {
         $message = [
             'name.required'=>'Вкажіть назву категорії',
             'image.required'=>'Вкажіть фото категорії',
@@ -22,6 +23,31 @@ class CategoryController extends Controller
             'image'=>'required',
             'description'=>'required',
         ],$message);
+    }
+
+    // Code for image addition
+    private function SaveImageToPath(Request $request): string | null {
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            // Generate a unique filename
+            $filename = uniqid() . '.' . $image->getClientOriginalExtension();
+
+            $sizes = [50, 150, 300, 600, 1200];
+            foreach ($sizes as $size)
+            {
+                $fileSave = $size.'_'.$filename; // picture's name
+                // Resize the image while maintaining aspect ratio
+                $resizedImage = Image::make($image)->resize($size, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                })->encode();
+                // Save the resized image
+                $path = public_path('uploads/' . $fileSave);
+                file_put_contents($path, $resizedImage);
+            }
+
+            return $filename;
+        }
+        return null;
     }
 
     /**
@@ -48,7 +74,7 @@ class CategoryController extends Controller
      *                 required={},
      *                 @OA\Property(
      *                     property="image",
-     *                     type="string"
+     *                     type="file"
      *                 ),
      *                 @OA\Property(
      *                     property="name",
@@ -66,12 +92,16 @@ class CategoryController extends Controller
      */
     public function create(Request $request): JsonResponse
     {
-        $validation = $this->ValidateCategory($request);
+        $input = $request->all();
+
+        $validation = $this->ValidateCategory($input);
         if($validation->fails()){
             return $this->JsonResponse($validation->errors(), 400);
         }
 
-        $category = Category::create($request->all());
+        $input['image'] = $this->SaveImageToPath($request);
+
+        $category = Category::create($input);
         return $this->JsonResponse($category, 201);
     }
 
@@ -151,13 +181,14 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::findOrFail($id);
+            $input = $request->all();
 
-            $validation = $this->ValidateCategory($request);
+            $validation = $this->ValidateCategory($input);
             if($validation->fails()){
                 return $this->JsonResponse($validation->errors(), 400);
             }
 
-            $category->update($request->all());
+            $category->update($input);
             return $this->JsonResponse($category);
         }
         catch (ModelNotFoundException) {
