@@ -28,20 +28,17 @@ export default function CreateCategory() {
 
     // the logic of submit button on formik form
     const formikSubmit = async (val: ICategoryItem) => {
-        try {
-            const validatedVal = await categorySchema.validate(val);
-            await http_common.post("api/categories/create", validatedVal);
-            navigate("/all");
-        }
-        catch (err: any) {
-            console.error('Server side error. Details: ' + err.message);
-        }
-    }
+        const validatedVal = await categorySchema.validate(val);
 
-    // https://formik.org/docs/guides/validation
+        await http_common.post("api/categories/create", validatedVal)
+            .catch(err => console.error('Server side error. Details: ' + err.message));
+
+        navigate("/all");
+    }
 
     // Formik component syntax
     return (
+        // https://formik.org/docs/guides/validation
         <Formik initialValues={emptyCategory} validationSchema={categorySchema} onSubmit={formikSubmit}>
             {({ errors, touched }) => (
                 <Form className="mx-auto">
@@ -70,6 +67,7 @@ export default function CreateCategory() {
                             <label htmlFor="image">Зображення</label>
                         </div>
                         <div className="md:w-10/12">
+                            {/* not address, but the input type image */}
                             <Field
                                 id="image"
                                 name="image"
