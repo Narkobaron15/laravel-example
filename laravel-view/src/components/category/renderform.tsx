@@ -88,9 +88,14 @@ export default function RenderCUForm({ initialVals, validationSchema, formikSubm
                                 src={values.image instanceof File && !errors.image ? URL.createObjectURL(values.image) : (initImg ?? defaultImg)} />
                             <span className="sr-only">Choose profile photo</span>
                             <input type="file" className="file" id="image" name="image" onChange={e => {
+                                // input stores an array of attachments
+                                // but uses only one item if the multiple mode is enabled
+
+                                // file extracting
                                 const files = e.target.files;
                                 if (files) {
                                     const file = files[0];
+                                    // setting file on form model
                                     setFieldValue("image", file);
                                 }
                             }} />

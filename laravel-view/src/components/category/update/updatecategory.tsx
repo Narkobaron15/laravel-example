@@ -15,6 +15,7 @@ export default function UpdateCategory() {
     // or when the category is not found 
     const navigate = useNavigate();
 
+    // grabbing current category data to fill in the updating form
     const [initialVals, setInitialVals] = useState<ICategoryCreateItem>(initCategory);
     const [initimg, setInitialimg] = useState('');
     useEffect(() => {
@@ -33,7 +34,7 @@ export default function UpdateCategory() {
     // the logic of submit button on formik form
     const formikSubmit = async (val: ICategoryCreateItem) => {
         const validatedVal = await categoryUpdateSchema.validate(val);
-
+        // posting request to update the category onto edit path
         await http_common
             .post(`api/categories/edit/${id}`, validatedVal,
                 { // http request params
@@ -41,12 +42,13 @@ export default function UpdateCategory() {
                         "Content-Type": "multipart/form-data",
                     },
                 })
+            // and redirecting if everything is fine
             .then(() => navigate("/"))
+            // if not, a toast message is shown
             .catch(callErrorToast);
     }
 
-    // test updating with pictures + adding. deleting is ok
-
+    // common form rendering object for creating and updating categories
     return <RenderCUForm
         initialVals={initialVals}
         validationSchema={categoryUpdateSchema}

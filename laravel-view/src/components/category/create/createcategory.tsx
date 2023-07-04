@@ -13,6 +13,7 @@ export default function CreateCategory() {
     // the logic of submit button on formik form
     const formikSubmit = async (val: ICategoryCreateItem) => {
         const validatedVal = await categoryCreateSchema.validate(val);
+        // posting request to create the category onto creation path
         await http_common.post("api/categories/create", validatedVal,
             { // http request params
                 headers: {
@@ -23,6 +24,7 @@ export default function CreateCategory() {
             .catch(callErrorToast);
     }
 
+    // common form rendering object for creating and updating categories
     return <RenderCUForm
         initialVals={initCategory}
         validationSchema={categoryCreateSchema}

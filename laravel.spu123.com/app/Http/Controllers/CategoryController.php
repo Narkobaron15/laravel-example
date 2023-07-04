@@ -15,12 +15,13 @@ class CategoryController extends Controller
     private function ValidateCategory(Array $input) {
         $message = [
             'name.required'=>'Вкажіть назву категорії',
-//            'image.required'=>'Вкажіть фото категорії',
+            // 'image.required'=>'Вкажіть фото категорії',
             'description.required'=>'Вкажіть опис категорії'
         ];
+        // validate using validator
         return Validator::make($input,[
             'name'=>'required',
-//            'image'=>'required',
+            // 'image'=>'required',
             'description'=>'required',
         ],$message);
     }
@@ -28,19 +29,22 @@ class CategoryController extends Controller
     // Code for image addition
     private function SaveImageToPath(Request $request): string | null {
         if ($request->hasFile('image')) {
+            // get image
             $image = $request->file('image');
             // Generate a unique filename
             $filename = uniqid() . '.' . $image->getClientOriginalExtension();
-            $sizes = [50, 150, 300, 600, 1200];
 
+            // for each of sizes, create resized image and generate common file name
+            // {size}_{$filename}
+            $sizes = [50, 150, 300, 600, 1200];
             foreach ($sizes as $size)
             {
                 $fileSave = $size.'_'.$filename; // picture's name
                 // Resize the image while maintaining aspect ratio
-                $resizedImage = Image::make($image)->resize($size, null, function ($constraint) {
-                    $constraint->aspectRatio();
-                })->encode();
-                // Save the resized image
+                $resizedImage = Image::make($image)->resize($size, null,
+                    fn ($constraint) => $constraint->aspectRatio() // arrow function syntax
+                )->encode();
+                // Save the resized image to $path
                 $path = public_path('uploads/' . $fileSave);
                 file_put_contents($path, $resizedImage);
             }
@@ -50,6 +54,7 @@ class CategoryController extends Controller
         return null;
     }
 
+    // Swagger commentary
     /**
      * @OA\Get(
      *     tags={"Category"},
@@ -63,6 +68,7 @@ class CategoryController extends Controller
         return $this->JsonResponse($list);
     }
 
+    // Swagger commentary
     /**
      * @OA\Post(
      *     tags={"Category"},
@@ -92,19 +98,24 @@ class CategoryController extends Controller
      */
     public function create(Request $request): JsonResponse
     {
+        // extracting all fields from multipart form
         $input = $request->all();
-
+        // validating form data
         $validation = $this->ValidateCategory($input);
         if($validation->fails()){
+            // sending 'error' response
             return $this->JsonResponse($validation->errors(), 400);
         }
 
+        // extracting category's image
         $input['image'] = $this->SaveImageToPath($request);
 
+        // updating and sending the new category
         $category = Category::create($input);
         return $this->JsonResponse($category, 201);
     }
 
+    // Swagger commentary
     /**
      * @OA\Get(
      *     tags={"Category"},
@@ -131,6 +142,8 @@ class CategoryController extends Controller
      */
     public function getById($id): JsonResponse
     {
+        // searching for the category by id in corresponding table
+        // if not found, sending 'error' response
         try {
             $category = Category::findOrFail($id);
             return $this->JsonResponse($category);
@@ -140,6 +153,7 @@ class CategoryController extends Controller
         }
     }
 
+    // Swagger commentary
     /**
      * @OA\Post(
      *     tags={"Category"},
@@ -181,26 +195,36 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::findOrFail($id);
+
+            // extracting all fields from multipart form
             $input = $request->all();
 
+            // validating form data
             $validation = $this->ValidateCategory($input);
             if($validation->fails()){
+                // sending 'error' response
                 return $this->JsonResponse($validation->errors(), 400);
             }
 
+            // erasing the previous image's files provided a new image is given
             if ($request->hasFile("image")) {
+                // for each of sizes,
                 $sizes = [50, 150, 300, 600, 1200];
                 foreach ($sizes as $size) {
+                    // getting the path
                     $fileDelete = $size.'_'.$category->image;
                     $removePath = public_path('uploads/' . $fileDelete);
+                    // and deleting from storage
                     if (file_exists($removePath)) {
                         unlink($removePath);
                     }
                 }
             }
 
+            // setting the new image if there is any
             $input['image'] = $this->SaveImageToPath($request) ?? $category['image'];
 
+            // updating and sending the updated category
             $category->update($input);
             return $this->JsonResponse($category);
         }
@@ -209,6 +233,7 @@ class CategoryController extends Controller
         }
     }
 
+    // Swagger commentary
     /**
      * @OA\Delete(
      *     path="/api/categories/{id}",

@@ -8,6 +8,7 @@ const ERROR_MESSAGES = {
     FILE_TOO_LARGE: "Файл занадто великий",
 }
 
+// picture validations
 const picTest = (value: any) => {
     if (value) {
         // Перевірка на тип обраного файлу - допустимий тип jpeg, png, gif
@@ -20,7 +21,9 @@ const picTest = (value: any) => {
     if (!value || !value.length) return true; // attachment is optional
     return value[0].size <= 50_000_000; // 50 MB
 };
-
+const imgValidation = mixed()
+    .test("fileType", ERROR_MESSAGES.NOT_A_PICTURE, picTest)
+    .test("fileSize", ERROR_MESSAGES.FILE_TOO_LARGE, sizeTest);
 
 // validation schemas for category create / update operations
 export const categoryCreateSchema = object({
@@ -29,19 +32,14 @@ export const categoryCreateSchema = object({
         .min(3, ERROR_MESSAGES.TOO_SMALL)
         .max(100, ERROR_MESSAGES.TOO_LARGE)
         .required(ERROR_MESSAGES.REQUIRED),
-    image: mixed()
-        .test("fileType", ERROR_MESSAGES.NOT_A_PICTURE, picTest)
-        .test("fileSize", ERROR_MESSAGES.FILE_TOO_LARGE, sizeTest)
-        .required(ERROR_MESSAGES.REQUIRED),
+    image: imgValidation.required(ERROR_MESSAGES.REQUIRED),
     description: string()
         .max(500, ERROR_MESSAGES.TOO_LARGE)
         .required(ERROR_MESSAGES.REQUIRED),
 });
+// schema.shape is used to create a new schema based on the other one
 export const categoryUpdateSchema = categoryCreateSchema.shape({
-    image: mixed()
-    .test("fileType", ERROR_MESSAGES.NOT_A_PICTURE, picTest)
-    .test("fileSize", ERROR_MESSAGES.FILE_TOO_LARGE, sizeTest)
-    .nullable(),
+    image: imgValidation.nullable(),
 });
 
 /*
@@ -49,15 +47,9 @@ export const categoryUpdateSchema = categoryCreateSchema.shape({
  * (Classes are both in 'type' and 'value' scope, 
  * so they are both left and right values)
  */
-// export type ICategoryCreateItem = InferType<typeof categoryUpdateSchema>;
+export type ICategoryCreateItem = InferType<typeof categoryUpdateSchema>;
 
 // Category interfaces
-export interface ICategoryCreateItem {
-    get id(): number | null | undefined;
-    get name(): string;
-    get image(): File | null | undefined;
-    get description(): string;
-}
 export interface ICategoryReadItem {
     get id(): number | null | undefined;
     get name(): string;
