@@ -1,103 +1,33 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Formik, Form, Field, FormikErrors, FormikTouched } from "formik";
 
-import ICategoryItem, { categorySchema } from "../../../models/category";
+import { ICategoryCreateItem, categoryCreateSchema, initCategory } from "../../../models/category";
 import http_common from "../../../http_common";
-
-const emptyCategory: ICategoryItem = {
-    id: undefined,
-    name: '',
-    image: '',
-    description: '',
-};
-
-// for error displaying
-const getErrorComponents = (
-    errors: FormikErrors<ICategoryItem>,
-    touched: FormikTouched<ICategoryItem>,
-    field: keyof ICategoryItem /* "id" | "name" | "image" | "description" */) => {
-    return errors[field] && touched[field]
-        ? <div className="error-text">{errors[field]}</div>
-        : null;
-};
+import { callErrorToast } from "../errortoast";
+import RenderCUForm from "../renderform";
 
 export default function CreateCategory() {
     // used for redirecting after successful form submit
     const navigate = useNavigate();
 
     // the logic of submit button on formik form
-    const formikSubmit = async (val: ICategoryItem) => {
-        try {
-            const validatedVal = await categorySchema.validate(val);
-            await http_common.post("api/categories/create", validatedVal);
-            navigate("/all");
-        }
-        catch (err: any) {
-            console.error('Server side error. Details: ' + err.message);
-        }
+    const formikSubmit = async (val: ICategoryCreateItem) => {
+        const validatedVal = await categoryCreateSchema.validate(val);
+        // posting request to create the category onto creation path
+        await http_common.post("api/categories/create", validatedVal,
+            { // http request params
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
+            .then(() => navigate("/"))
+            .catch(callErrorToast);
     }
 
-    // https://formik.org/docs/guides/validation
-
-    // Formik component syntax
-    return (
-        <Formik initialValues={emptyCategory} validationSchema={categorySchema} onSubmit={formikSubmit}>
-            {({ errors, touched }) => (
-                <Form className="mx-auto">
-                    <div className="form-group">
-                        <div className="md:w-2/12">
-                            <label htmlFor="name">Назва</label>
-                        </div>
-                        <div className="md:w-10/12">
-                            <Field
-                                id="name"
-                                name="name"
-                                type="text"
-                                placeholder="Введіть назву..."
-                            />
-                        </div>
-                    </div>
-                    {
-                        /* 
-                         * if any errors were registered,
-                         * the error message will be shown
-                         */
-                        getErrorComponents(errors, touched, "name")
-                    }
-                    <div className="form-group">
-                        <div className="md:w-2/12">
-                            <label htmlFor="image">Зображення</label>
-                        </div>
-                        <div className="md:w-10/12">
-                            <Field
-                                id="image"
-                                name="image"
-                                type="text"
-                                placeholder="Введіть адресу зображення..."
-                            />
-                        </div>
-                    </div>
-                    {getErrorComponents(errors, touched, "image")}
-                    <div className="form-group">
-                        <div className="md:w-2/12">
-                            <label htmlFor="description">Опис</label>
-                        </div>
-                        <div className="md:w-10/12">
-                            <Field
-                                id="description"
-                                name="description"
-                                type="text"
-                                placeholder="Введіть опис..."
-                            />
-                        </div>
-                    </div>
-                    {getErrorComponents(errors, touched, "description")}
-                    <div className="flex justify-center">
-                        <button type="submit">Додати</button>
-                    </div>
-                </Form>
-            )}
-        </Formik>
-    );
+    // common form rendering object for creating and updating categories
+    return <RenderCUForm
+        initialVals={initCategory}
+        validationSchema={categoryCreateSchema}
+        updating={false}
+        formikSubmit={formikSubmit} />;
 }
