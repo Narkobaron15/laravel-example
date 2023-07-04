@@ -15,12 +15,12 @@ class CategoryController extends Controller
     private function ValidateCategory(Array $input) {
         $message = [
             'name.required'=>'Вкажіть назву категорії',
-            'image.required'=>'Вкажіть фото категорії',
+//            'image.required'=>'Вкажіть фото категорії',
             'description.required'=>'Вкажіть опис категорії'
         ];
         return Validator::make($input,[
             'name'=>'required',
-            'image'=>'required',
+//            'image'=>'required',
             'description'=>'required',
         ],$message);
     }
@@ -31,8 +31,8 @@ class CategoryController extends Controller
             $image = $request->file('image');
             // Generate a unique filename
             $filename = uniqid() . '.' . $image->getClientOriginalExtension();
-
             $sizes = [50, 150, 300, 600, 1200];
+
             foreach ($sizes as $size)
             {
                 $fileSave = $size.'_'.$filename; // picture's name
@@ -161,7 +161,7 @@ class CategoryController extends Controller
      *                 required={"name"},
      *                 @OA\Property(
      *                     property="image",
-     *                     type="string"
+     *                     type="file"
      *                 ),
      *                 @OA\Property(
      *                     property="name",
@@ -187,6 +187,19 @@ class CategoryController extends Controller
             if($validation->fails()){
                 return $this->JsonResponse($validation->errors(), 400);
             }
+
+            if ($request->hasFile("image")) {
+                $sizes = [50, 150, 300, 600, 1200];
+                foreach ($sizes as $size) {
+                    $fileDelete = $size.'_'.$category->image;
+                    $removePath = public_path('uploads/' . $fileDelete);
+                    if (file_exists($removePath)) {
+                        unlink($removePath);
+                    }
+                }
+            }
+
+            $input['image'] = $this->SaveImageToPath($request) ?? $category['image'];
 
             $category->update($input);
             return $this->JsonResponse($category);

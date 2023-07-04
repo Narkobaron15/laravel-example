@@ -1,6 +1,9 @@
 import React from 'react';
 import { Outlet } from "react-router-dom";
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import Navbar from './navbar';
 
 export default function Layout() {
@@ -13,6 +16,7 @@ export default function Layout() {
             <main>
                 <Outlet />
             </main>
+            <ToastContainer />
         </>
     );
 }

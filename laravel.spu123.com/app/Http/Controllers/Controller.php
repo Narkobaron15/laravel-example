@@ -28,7 +28,7 @@ class Controller extends BaseController
     protected function JsonResponse($data, int $status = 200): JsonResponse
     {
         return response()->json($data, $status,
-            ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_UNESCAPED_UNICODE);
+            ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_PRETTY_PRINT);
     }
     protected function ModelNotFoundResponse() : JsonResponse {
         return $this->JsonResponse(['message' => 'Not found', "status" => 404], 404);

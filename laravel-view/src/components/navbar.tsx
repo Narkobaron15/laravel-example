@@ -17,10 +17,7 @@ export default function Navbar() {
                 <div className="navbar-default" id="navbar-default">
                     <ul>
                         <li>
-                            <Link to="/">Головна</Link>
-                        </li>
-                        <li>
-                            <Link to="/all">Усі категорії</Link>
+                            <Link to="/">Усі категорії</Link>
                         </li>
                         <li>
                             <Link to="/create">Створити</Link>
