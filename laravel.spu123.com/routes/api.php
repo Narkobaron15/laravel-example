@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,8 +20,36 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get("/categories", [CategoryController::class, "index"]);
-Route::post("/categories/create", [CategoryController::class, "create"]);
-Route::get("/categories/{id}", [CategoryController::class, "getById"]);
-Route::post("/categories/edit/{id}", [CategoryController::class, "put"]);
-Route::delete("/categories/{id}", [CategoryController::class, "delete"]);
+// Route group for requests of categories' info
+// Located in api middleware with categories prefix,
+// permitted requests can be done on such path:
+// http://{api_domain}/{middleware}/{prefix}/{request_path}
+// http://laravel.spu123.com/api/categories/{request_path}
+Route::group(
+    [
+        'middleware' => 'api',
+        'prefix' => 'categories',
+    ],
+    function () {
+        Route::get("/", [CategoryController::class, "index"]);
+        Route::post("/create", [CategoryController::class, "create"]);
+        Route::get("/{id}", [CategoryController::class, "getById"]);
+        Route::post("/edit/{id}", [CategoryController::class, "put"]);
+        Route::delete("/{id}", [CategoryController::class, "delete"]);
+    }
+);
+
+// Route group for requests of categories' info
+Route::group(
+    [
+        'middleware' => 'api',
+        'prefix' => 'auth',
+    ],
+    function () {
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::get('/user-profile', [AuthController::class, 'userProfile']);
+    }
+);

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @OA\Info(
@@ -25,12 +26,12 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
 
-    protected function JsonResponse($data, int $status = 200): JsonResponse
+    protected function JsonResponse($data, int $status = Response::HTTP_OK): JsonResponse
     {
         return response()->json($data, $status,
             ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_PRETTY_PRINT);
     }
     protected function ModelNotFoundResponse() : JsonResponse {
-        return $this->JsonResponse(['message' => 'Not found', "status" => 404], 404);
+        return $this->JsonResponse(['message' => 'Not found', "status" => Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
     }
 }
