@@ -17,6 +17,10 @@ class Category extends Model
       "name", "image", "description",
     ];
 
+    /**
+     * **PROPERTIES** that should be publicly visible, including JSON
+     * @var string[]
+     */
     protected $appends = [
         "picture_xs", "picture_s","picture_m","picture_l","picture_xl",
     ];
