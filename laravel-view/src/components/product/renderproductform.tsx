@@ -133,6 +133,7 @@ export default function RenderProductCUForm({ initialVals, validationSchema, for
                                  * TODO: 
                                  * Add mapping from field 'images' to the visible 
                                  * FormImage components that will have delete button
+                                 * https://formik.org/docs/api/fieldarray
                                  */
                             }
                             {

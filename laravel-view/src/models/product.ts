@@ -2,7 +2,7 @@ import { object, number, string, mixed, InferType } from 'yup';
 import { ERROR_MESSAGES, IApiImage, MAX_FILE_SIZE } from './common';
 
 // multi-file picture validations
-export const picTest = (value: any) => {
+const picTest = (value: any) => {
     if (value instanceof FileList) {
         // Перевірка на тип обраного файлу - допустимий тип jpeg, png, gif
         const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
@@ -28,7 +28,7 @@ export const picTest = (value: any) => {
     return true;
 };
 
-export const imgValidation = mixed()
+const imgValidation = mixed()
     .test("fileType", ERROR_MESSAGES.NOT_A_PICTURE, picTest)
     .test("fileSize", ERROR_MESSAGES.FILE_TOO_LARGE, sizeTest);
 

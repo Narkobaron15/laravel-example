@@ -30,7 +30,7 @@ export default function CreateProduct() {
             callErrorToast(new Error("Wrong category, please select from given options or refresh the page."));
             return;
         }
-        
+
         const validatedVal: any = await productCreateSchema.validate(val);
 
         // php accepts multiple files if square brackets are used in the parameter name
@@ -38,7 +38,7 @@ export default function CreateProduct() {
         delete validatedVal.images;
 
         // posting request to create the category onto creation path
-        await http_common.post("api/products/create", validatedVal,
+        await http_common.post("/api/products/create", validatedVal,
             { // http request params
                 headers: {
                     "Content-Type": "multipart/form-data",

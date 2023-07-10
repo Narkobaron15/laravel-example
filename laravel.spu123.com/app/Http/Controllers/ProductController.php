@@ -31,7 +31,7 @@ class ProductController extends Controller
             'name'=>'required|string|max:200',
             'price'=>'required|numeric|min:0',
             'description'=>'required|string|max:4000',
-            'images' => 'required|array',
+            'images' => 'array',
             'category_id' => 'required|integer|min:0',
         ], $rules);
     }
