@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import openimg from '../img/open.svg';
+import openimg from '../assets/open.svg';
 
 export default function Navbar() {
     return (
@@ -14,13 +14,19 @@ export default function Navbar() {
                     <span className="sr-only">Open main menu</span>
                     <img src={openimg} aria-hidden="true" alt="Open menu" />
                 </button>
-                <div className="navbar-default" id="navbar-default">
+                <div className="hidden w-full md:block md:w-auto" id="navbar-default">
                     <ul>
                         <li>
-                            <Link to="/">Усі категорії</Link>
+                            <Link to="/products">Керувати продуктами</Link>
                         </li>
                         <li>
-                            <Link to="/create">Створити</Link>
+                            <Link to="/products/create">Створити продукт</Link>
+                        </li>
+                        <li>
+                            <Link to="/categories">Усі категорії</Link>
+                        </li>
+                        <li>
+                            <Link to="/categories/create">Створити категорію</Link>
                         </li>
                     </ul>
                 </div>

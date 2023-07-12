@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @method static findOrFail($id)
@@ -22,39 +23,30 @@ class Category extends Model
      * @var string[]
      */
     protected $appends = [
-        "picture_xs", "picture_s","picture_m","picture_l","picture_xl",
+        "picture",
     ];
 
-    /**
-     * @return string
-     */
-    public function getPictureXsAttribute(): string {
-        return $this->uploadsUrl.'50_'.$this['image'];
-    }
-    /**
-     * @return string
-     */
-    public function getPictureSAttribute(): string {
-        return $this->uploadsUrl.'150_'.$this['image'];
-    }
-    /**
-     * @return string
-     */
-    public function getPictureMAttribute(): string {
-        return $this->uploadsUrl.'300_'.$this['image'];
-    }
-    /**
-     * @return string
-     */
-    public function getPictureLAttribute(): string {
-        return $this->uploadsUrl.'600_'.$this['image'];
-    }
-    /**
-     * @return string
-     */
-    public function getPictureXlAttribute(): string {
-        return $this->uploadsUrl.'1200_'.$this['image'];
+    protected $hidden = [
+        "image", "created_at", "updated_at",
+    ];
+
+    public function products(): HasMany{
+        return $this->hasMany(Product::class);
     }
 
-    protected $uploadsUrl = 'http://laravel.spu123.com/uploads/';
+    // Definitions for properties that will be **appended**
+    /**
+     * @return array
+     */
+    public function getPictureAttribute(): array {
+        return [
+            'xs' => $this->uploadsUrl.'50_'.$this['image'],
+            'sm' => $this->uploadsUrl.'150_'.$this['image'],
+            'md' => $this->uploadsUrl.'300_'.$this['image'],
+            'lg' => $this->uploadsUrl.'600_'.$this['image'],
+            'xl' => $this->uploadsUrl.'1200_'.$this['image'],
+            ];
+    }
+
+    protected string $uploadsUrl = 'http://laravel.spu123.com/uploads/';
 }

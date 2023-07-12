@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
@@ -20,7 +21,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route group for requests of categories' info
+// Route group for categories' CRUD requests
 // Located in api middleware with categories prefix,
 // permitted requests can be done on such path:
 // http://{api_domain}/{middleware}/{prefix}/{request_path}
@@ -39,7 +40,22 @@ Route::group(
     }
 );
 
-// Route group for requests of categories' info
+// Route group for products' CRUD requests
+Route::group(
+    [
+        'middleware' => 'api',
+        'prefix' => 'products',
+    ],
+    function () {
+        Route::get("/", [ProductController::class, "index"]);
+        Route::post("/create", [ProductController::class, "create"]);
+        Route::get("/{id}", [ProductController::class, "getById"]);
+        Route::post("/edit/{id}", [ProductController::class, "put"]);
+        Route::delete("/{id}", [ProductController::class, "delete"]);
+    }
+);
+
+// Route group for authentication requests
 Route::group(
     [
         'middleware' => 'api',

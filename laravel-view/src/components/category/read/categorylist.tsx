@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 
-import { ICategoryReadItem } from "../../../models/category";
+import { ICategoryReadModel } from "../../../models/category";
 import Category from "./category";
 import http_common from "../../../http_common";
-import { callErrorToast } from "../errortoast";
+import { callErrorToast } from "../../errortoast";
 
 export default function CategoryList() {
-  const [items, setList] = useState<ICategoryReadItem[]>([]);
+  const [items, setList] = useState<ICategoryReadModel[]>();
   useEffect(() => {
     http_common.get(`/api/categories`)
       .then(r => setList(r.data))
@@ -14,11 +14,11 @@ export default function CategoryList() {
   }, []);
 
 
-  return items.length == 0
+  return items?.length === 0
     ? (
       <div className="text-center">
         <h1>Список категорій пустий</h1>
-        <a href="/create" className="tailwind-btn text-lg">Додати нову категорію</a>
+        <a href="/categories/create" className="tailwind-btn text-lg">Додати нову категорію</a>
       </div>
     )
     : (
@@ -44,6 +44,6 @@ export default function CategoryList() {
             <Category params={item} key={index}
               removeCallback={() => setList(items?.filter(val => val !== item))} />)}
         </tbody>
-      </table >
+      </table>
     );
 }

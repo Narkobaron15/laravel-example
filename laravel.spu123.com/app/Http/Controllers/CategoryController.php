@@ -7,51 +7,30 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Validator;
 
 class CategoryController extends Controller
 {
     // Code for model validation
-    private function ValidateCategory(Array $input) {
-        $message = [
+    protected function ValidateCategory(Array $input) {
+        $rules = [
             'name.required'=>'Вкажіть назву категорії',
+            // image is not required because it won't be validated correctly on update
             // 'image.required'=>'Вкажіть фото категорії',
-            'description.required'=>'Вкажіть опис категорії'
+            'description.required'=>'Вкажіть опис категорії',
+            'name.max' => 'Поле занадто довге',
+            'description.max' => 'Поле занадто довге',
+            'image.mimes' => 'Виберіть картинку формату jpeg, jpg, png або gif',
+            'image.max' => 'Картинка занадто великого розміру. Виберіть меншу за 50 МБ',
         ];
+
         // validate using validator
-        return Validator::make($input,[
-            'name'=>'required',
-            // 'image'=>'required',
-            'description'=>'required',
-        ],$message);
-    }
-
-    // Code for image addition
-    private function SaveImageToPath(Request $request): string | null {
-        if ($request->hasFile('image')) {
-            // get image
-            $image = $request->file('image');
-            // Generate a unique filename
-            $filename = uniqid() . '.' . $image->getClientOriginalExtension();
-
-            // for each of sizes, create resized image and generate common file name
-            // {size}_{$filename}
-            $sizes = [50, 150, 300, 600, 1200];
-            foreach ($sizes as $size)
-            {
-                $fileSave = $size.'_'.$filename; // picture's name
-                // Resize the image while maintaining aspect ratio
-                $resizedImage = Image::make($image)->resize($size, null,
-                    fn ($constraint) => $constraint->aspectRatio() // arrow function syntax
-                )->encode();
-                // Save the resized image to $path
-                $path = public_path('uploads/' . $fileSave);
-                file_put_contents($path, $resizedImage);
-            }
-
-            return $filename;
-        }
-        return null;
+        return Validator::make($input, [
+            'name'=>'required|string|max:200',
+            'image'=>'mimes:jpeg,jpg,png,gif|max:50000',
+            'description'=>'required|string|max:4000',
+        ], $rules);
     }
 
     // Swagger commentary
@@ -104,7 +83,7 @@ class CategoryController extends Controller
         $validation = $this->ValidateCategory($input);
         if($validation->fails()){
             // sending 'error' response
-            return $this->JsonResponse($validation->errors(), 400);
+            return $this->JsonResponse($validation->errors(), Response::HTTP_BAD_REQUEST);
         }
 
         // extracting category's image
@@ -112,7 +91,7 @@ class CategoryController extends Controller
 
         // updating and sending the new category
         $category = Category::create($input);
-        return $this->JsonResponse($category, 201);
+        return $this->JsonResponse($category, Response::HTTP_CREATED);
     }
 
     // Swagger commentary
@@ -203,30 +182,19 @@ class CategoryController extends Controller
             $validation = $this->ValidateCategory($input);
             if($validation->fails()){
                 // sending 'error' response
-                return $this->JsonResponse($validation->errors(), 400);
+                return $this->JsonResponse($validation->errors(), Response::HTTP_BAD_REQUEST);
             }
 
-            // erasing the previous image's files provided a new image is given
+            // removing the current image
             if ($request->hasFile("image")) {
-                // for each of sizes,
-                $sizes = [50, 150, 300, 600, 1200];
-                foreach ($sizes as $size) {
-                    // getting the path
-                    $fileDelete = $size.'_'.$category->image;
-                    $removePath = public_path('uploads/' . $fileDelete);
-                    // and deleting from storage
-                    if (file_exists($removePath)) {
-                        unlink($removePath);
-                    }
-                }
+                $this->UnlinkImage($category->image);
             }
-
             // setting the new image if there is any
             $input['image'] = $this->SaveImageToPath($request) ?? $category['image'];
 
             // updating and sending the updated category
             $category->update($input);
-            return $this->JsonResponse($category);
+            return $this->JsonResponse(Category::findOrFail($id)); // send updated data
         }
         catch (ModelNotFoundException) {
             return $this->ModelNotFoundResponse();

@@ -1,14 +1,7 @@
 import { object, string, number, mixed, InferType } from 'yup';
+import { ERROR_MESSAGES, IApiImage, MAX_FILE_SIZE } from './common';
 
-const ERROR_MESSAGES = {
-    REQUIRED: "Це поле є обов'язковим",
-    TOO_SMALL: "Занадто коротке значення",
-    TOO_LARGE: "Занадто довге значення",
-    NOT_A_PICTURE: "Це не картинка",
-    FILE_TOO_LARGE: "Файл занадто великий",
-}
-
-// picture validations
+// single-file picture validations
 const picTest = (value: any) => {
     if (value) {
         // Перевірка на тип обраного файлу - допустимий тип jpeg, png, gif
@@ -19,7 +12,7 @@ const picTest = (value: any) => {
     return true;
 }, sizeTest = (value: any) => {
     if (!value || !value.length) return true; // attachment is optional
-    return value[0].size <= 50_000_000; // 50 MB
+    return value[0].size <= MAX_FILE_SIZE; // 50 MB
 };
 const imgValidation = mixed()
     .test("fileType", ERROR_MESSAGES.NOT_A_PICTURE, picTest)
@@ -29,12 +22,12 @@ const imgValidation = mixed()
 export const categoryCreateSchema = object({
     id: number().nullable(),
     name: string()
-        .min(3, ERROR_MESSAGES.TOO_SMALL)
-        .max(100, ERROR_MESSAGES.TOO_LARGE)
+        .min(5, ERROR_MESSAGES.TOO_SMALL)
+        .max(200, ERROR_MESSAGES.TOO_LARGE)
         .required(ERROR_MESSAGES.REQUIRED),
     image: imgValidation.required(ERROR_MESSAGES.REQUIRED),
     description: string()
-        .max(500, ERROR_MESSAGES.TOO_LARGE)
+        .max(4000, ERROR_MESSAGES.TOO_LARGE)
         .required(ERROR_MESSAGES.REQUIRED),
 });
 // schema.shape is used to create a new schema based on the other one
@@ -47,26 +40,20 @@ export const categoryUpdateSchema = categoryCreateSchema.shape({
  * (Classes are both in 'type' and 'value' scope, 
  * so they are both left and right values)
  */
-export type ICategoryCreateItem = InferType<typeof categoryUpdateSchema>;
+export type ICategoryCreateModel = InferType<typeof categoryUpdateSchema>;
 
 // Category interfaces
-export interface ICategoryReadItem {
-    get id(): number | null | undefined;
+export interface ICategoryReadModel {
+    get id(): number;
     get name(): string;
-    get image(): string;
     get description(): string;
-
-    get picture_xs(): string;
-    get picture_s(): string;
-    get picture_m(): string;
-    get picture_l(): string;
-    get picture_xl(): string;
+    get picture(): IApiImage;
 }
 
 // Sample item 
-export const initCategory: ICategoryCreateItem = {
-    id: undefined,
+export const initCategory: ICategoryCreateModel = {
+    id: null,
     name: '',
-    image: undefined,
+    image: null,
     description: '',
 };

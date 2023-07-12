@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { ICategoryCreateItem, categoryUpdateSchema, initCategory } from "../../../models/category";
+import { ICategoryCreateModel, categoryUpdateSchema, initCategory } from "../../../models/category";
 import http_common from "../../../http_common";
-import { callErrorToast } from "../errortoast";
-import RenderCUForm from "../renderform";
+import { callErrorToast } from "../../errortoast";
+import RenderCategoryCUForm from "../rendercategoryform";
 
 
 export default function UpdateCategory() {
@@ -16,9 +16,9 @@ export default function UpdateCategory() {
     const navigate = useNavigate();
 
     // grabbing current category data to fill in the updating form
-    const [initialVals, setInitialVals] = useState<ICategoryCreateItem>(initCategory);
-    const [initimg, setInitialimg] = useState('');
-    useEffect(() => {
+    const [initialVals, setInitialVals] = React.useState<ICategoryCreateModel>(initCategory);
+    const [initimg, setInitialimg] = React.useState('');
+    React.useEffect(() => {
         http_common.get(`/api/categories/${id}`)
             .then(response => {
                 response.data.image = null;
@@ -27,12 +27,12 @@ export default function UpdateCategory() {
             })
             .catch(error => {
                 callErrorToast(error);
-                navigate(`/`);
+                navigate(`/categories`);
             });
-    }, [id]);
+    }, [id, navigate]);
 
     // the logic of submit button on formik form
-    const formikSubmit = async (val: ICategoryCreateItem) => {
+    const formikSubmit = async (val: ICategoryCreateModel) => {
         const validatedVal = await categoryUpdateSchema.validate(val);
         // posting request to update the category onto edit path
         await http_common
@@ -43,13 +43,13 @@ export default function UpdateCategory() {
                     },
                 })
             // and redirecting if everything is fine
-            .then(() => navigate("/"))
+            .then(() => navigate("/categories"))
             // if not, a toast message is shown
             .catch(callErrorToast);
     }
 
     // common form rendering object for creating and updating categories
-    return <RenderCUForm
+    return <RenderCategoryCUForm
         initialVals={initialVals}
         validationSchema={categoryUpdateSchema}
         formikSubmit={formikSubmit}
