@@ -65,7 +65,7 @@ export interface IProductReadModel {
     get description(): string;
     get category_id(): number;
     get category_name(): string;
-    get primary_image(): IApiImage | null | undefined;
+    get primary_image(): IApiImage;
     get images(): IApiImage[],
 }
 

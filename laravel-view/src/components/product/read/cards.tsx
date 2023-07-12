@@ -22,7 +22,7 @@ export default function CardsComponent() {
     )
     : (
         <div className="flex flex-row flex-wrap justify-between mx-8">
-            {products?.map(product => <ProductCardComponent product={product} />)}
+            {products?.map((product, index) => <ProductCardComponent key={index} product={product} />)}
         </div>
     );
 }

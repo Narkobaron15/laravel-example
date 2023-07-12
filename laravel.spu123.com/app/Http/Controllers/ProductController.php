@@ -32,6 +32,7 @@ class ProductController extends Controller
             'price'=>'required|numeric|min:0',
             'description'=>'required|string|max:4000',
             'images' => 'array',
+//            'images_to_remove' => 'array',
             'category_id' => 'required|integer|min:0',
         ], $rules);
     }
