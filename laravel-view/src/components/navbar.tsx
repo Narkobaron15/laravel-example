@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import openimg from '../img/open.svg';
+import openimg from '../assets/open.svg';
 
 export default function Navbar() {
     return (

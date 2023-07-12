@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { ICategoryCreateModel, categoryUpdateSchema, initCategory } from "../../../models/category";
@@ -16,9 +16,9 @@ export default function UpdateCategory() {
     const navigate = useNavigate();
 
     // grabbing current category data to fill in the updating form
-    const [initialVals, setInitialVals] = useState<ICategoryCreateModel>(initCategory);
-    const [initimg, setInitialimg] = useState('');
-    useEffect(() => {
+    const [initialVals, setInitialVals] = React.useState<ICategoryCreateModel>(initCategory);
+    const [initimg, setInitialimg] = React.useState('');
+    React.useEffect(() => {
         http_common.get(`/api/categories/${id}`)
             .then(response => {
                 response.data.image = null;
@@ -29,7 +29,7 @@ export default function UpdateCategory() {
                 callErrorToast(error);
                 navigate(`/categories`);
             });
-    }, [id]);
+    }, [id, navigate]);
 
     // the logic of submit button on formik form
     const formikSubmit = async (val: ICategoryCreateModel) => {

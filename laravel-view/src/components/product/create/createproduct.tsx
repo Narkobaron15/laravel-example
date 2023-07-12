@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import http_common from "../../../http_common";
@@ -11,8 +11,8 @@ export default function CreateProduct() {
     // used for redirecting after successful form submit
     const navigate = useNavigate();
 
-    const [categories, setCategories] = useState<ICategoryReadModel[]>([]);
-    useEffect(() => {
+    const [categories, setCategories] = React.useState<ICategoryReadModel[]>([]);
+    React.useEffect(() => {
         http_common.get(`/api/categories`)
             .then(r => {
                 setCategories(r.data);

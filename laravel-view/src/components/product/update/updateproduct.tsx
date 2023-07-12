@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import http_common from "../../../http_common";
@@ -14,9 +14,9 @@ export default function UpdateProduct() {
     // extract parameters
     const { id } = useParams();
 
-    const [categories, setCategories] = useState<ICategoryReadModel[]>([]);
-    const [currentProduct, setCurrentProduct] = useState<IProductCreateModel>(emptyProduct);
-    useEffect(() => {
+    const [categories, setCategories] = React.useState<ICategoryReadModel[]>([]);
+    const [currentProduct, setCurrentProduct] = React.useState<IProductCreateModel>(emptyProduct);
+    React.useEffect(() => {
         const catchFn = (e: any) => {
             callErrorToast(e);
             navigate(`/products`);

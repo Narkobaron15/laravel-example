@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import http_common from "../../../http_common";
 import { callErrorToast } from "../../errortoast";
-import ProductComponent from "./product";
+import ProductRowComponent from "./productrow";
 import { IProductReadModel } from "../../../models/product";
 
 export default function ProductListComponent() {
-    const [products, setProducts] = useState<IProductReadModel[]>();
-    useEffect(() => {
+    const [products, setProducts] = React.useState<IProductReadModel[]>();
+    React.useEffect(() => {
         http_common.get('/api/products')
         .then(r => setProducts(r.data))
         .catch(callErrorToast);
@@ -44,7 +44,7 @@ export default function ProductListComponent() {
         </thead>
         <tbody>
           {products?.map((item, index) =>
-            <ProductComponent params={item} key={index}
+            <ProductRowComponent params={item} key={index}
               removeCallback={() => setProducts(products?.filter(val => val !== item))} />)}
         </tbody>
       </table>

@@ -8,7 +8,7 @@ type ProductArgs = {
     removeCallback: () => void,
 }
 
-export default function ProductComponent({ params, removeCallback }: ProductArgs) {
+export default function ProductRowComponent({ params, removeCallback }: ProductArgs) {
     return (
         <tr>
             <th scope="row">{params.id}</th>

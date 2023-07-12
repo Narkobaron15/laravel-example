@@ -7,7 +7,7 @@ import CreateCategory from './components/category/create/createcategory';
 import NotFound from './components/notfound';
 import UpdateCategory from './components/category/update/updatecategory';
 import ProductListComponent from './components/product/read/productlist';
-import ProductsCardsComponent from './components/product/read/productscards';
+import CardsComponent from './components/product/read/cards';
 import CreateProduct from './components/product/create/createproduct';
 import UpdateProduct from './components/product/update/updateproduct';
 
@@ -15,7 +15,7 @@ export default function App() {
   return (
     <Routes>
       <Route path='/' element={<Layout />}>
-        <Route index element={<ProductsCardsComponent />} />
+        <Route index element={<CardsComponent />} />
         <Route path='/products'>
           <Route index element={<ProductListComponent />} />
           <Route path='create' element={<CreateProduct />} />
