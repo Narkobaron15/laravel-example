@@ -44,8 +44,6 @@ export default function UpdateProduct() {
             return;
         }
 
-        val.remove_images = [0, 1, 2];
-
         const validatedVal: any = await productUpdateSchema.validate(val);
 
         // php accepts multiple files if square brackets are used in the parameter name
