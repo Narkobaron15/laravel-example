@@ -3,23 +3,23 @@ import React from "react";
 import { Formik, Form, Field, FormikErrors, FormikTouched } from "formik";
 import { ObjectSchema } from "yup";
 
-import { IProductCreateModel } from "../../models/product";
+import { IProductUpdateModel } from "../../models/product";
 import { ICategoryReadModel } from "../../models/category";
 
 // for error displaying
 const getErrorComponents = (
-    errors: FormikErrors<IProductCreateModel>,
-    touched: FormikTouched<IProductCreateModel>,
-    field: keyof IProductCreateModel /* "id" | "name" | "image" | "description" */) => {
-    return errors[field] && ((field !== "images" && touched[field]) || field === "images")
+    errors: FormikErrors<IProductUpdateModel>,
+    touched: FormikTouched<IProductUpdateModel>,
+    field: keyof IProductUpdateModel) => {
+    return errors[field] && (field === "images" || touched[field])
         ? <div className="error-text">{errors[field]}</div>
         : null;
 };
 
 type ProductCUArgs = {
-    initialVals: IProductCreateModel,
-    validationSchema: ObjectSchema<IProductCreateModel>,
-    formikSubmit: (val: IProductCreateModel) => Promise<void>,
+    initialVals: IProductUpdateModel,
+    validationSchema: ObjectSchema<IProductUpdateModel>,
+    formikSubmit: (val: IProductUpdateModel) => Promise<void>,
     updating: boolean,
     categories: ICategoryReadModel[]
 }

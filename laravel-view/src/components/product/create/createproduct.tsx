@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import http_common from "../../../http_common";
 import { callErrorToast } from "../../errortoast";
 import RenderProductCUForm from "../renderproductform";
-import { IProductCreateModel, emptyProduct, productCreateSchema } from "../../../models/product";
+import { IProductUpdateModel, emptyProduct, productCreateSchema } from "../../../models/product";
 import { ICategoryReadModel } from "../../../models/category";
 
 export default function CreateProduct() {
@@ -25,7 +25,7 @@ export default function CreateProduct() {
     }, [navigate])
 
     // the logic of submit button on formik form
-    const formikSubmit = async (val: IProductCreateModel) => {
+    const formikSubmit = async (val: IProductUpdateModel) => {
         if (categories.filter(c => c.id === val.category_id).length === 0) {
             callErrorToast(new Error("Wrong category, please select from given options or refresh the page."));
             return;

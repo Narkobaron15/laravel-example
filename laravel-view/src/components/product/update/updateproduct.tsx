@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import http_common from "../../../http_common";
 import { callErrorToast } from "../../errortoast";
 import RenderProductCUForm from "../renderproductform";
-import { IProductCreateModel, emptyProduct, productUpdateSchema } from "../../../models/product";
+import { IProductUpdateModel, emptyProduct, productUpdateSchema } from "../../../models/product";
 import { ICategoryReadModel } from "../../../models/category";
 
 export default function UpdateProduct() {
@@ -15,7 +15,7 @@ export default function UpdateProduct() {
     const { id } = useParams();
 
     const [categories, setCategories] = React.useState<ICategoryReadModel[]>([]);
-    const [currentProduct, setCurrentProduct] = React.useState<IProductCreateModel>(emptyProduct);
+    const [currentProduct, setCurrentProduct] = React.useState<IProductUpdateModel>(emptyProduct);
     React.useEffect(() => {
         const catchFn = (e: any) => {
             callErrorToast(e);
@@ -36,13 +36,15 @@ export default function UpdateProduct() {
     }, [navigate, id])
 
     // the logic of submit button on formik form
-    const formikSubmit = async (val: IProductCreateModel) => {
+    const formikSubmit = async (val: IProductUpdateModel) => {
         // check if no inspector manipulations were performed
         // cast needed because of using the select html item
         if (categories.filter(c => c.id === Number(val.category_id)).length === 0) {
             callErrorToast(new Error("Wrong category, please select from given options or refresh the page."));
             return;
         }
+
+        val.remove_images = [0, 1, 2];
 
         const validatedVal: any = await productUpdateSchema.validate(val);
 
@@ -57,7 +59,10 @@ export default function UpdateProduct() {
                     "Content-Type": "multipart/form-data",
                 },
             })
-            .then(() => navigate("/products"))
+            .then(r => {
+                console.info(r);
+                navigate("/products");
+            })
             .catch(callErrorToast);
     }
 
