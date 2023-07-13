@@ -4,16 +4,16 @@ import { callErrorToast } from "../../errortoast";
 import ProductRowComponent from "./productrow";
 import { IProductReadModel } from "../../../models/product";
 
-export default function ProductListComponent() {
-    const [products, setProducts] = React.useState<IProductReadModel[]>();
-    React.useEffect(() => {
-        http_common.get('/api/products')
-        .then(r => setProducts(r.data))
-        .catch(callErrorToast);
-    }, []);
+export default function ProductList() {
+  const [products, setProducts] = React.useState<IProductReadModel[]>();
+  React.useEffect(() => {
+    http_common.get('/api/products')
+      .then(r => setProducts(r.data))
+      .catch(callErrorToast);
+  }, []);
 
-    // retouch the table
-    return products?.length === 0
+  // retouch the table
+  return products?.length === 0
     ? (
       <div className="text-center">
         <h1>Список продуктів пустий</h1>
@@ -26,10 +26,10 @@ export default function ProductListComponent() {
           <col className="w-1/12" />
           <col className="w-1/12" />
           <col className="w-2/12" />
-          <col className="w-4/12" />
+          <col className="w-3/12" />
           <col className="w-1/12" />
           <col className="w-2/12" />
-          <col className="w-1/12" />
+          <col className="w-2/12" />
         </colgroup>
         <thead>
           <tr>
@@ -45,7 +45,8 @@ export default function ProductListComponent() {
         <tbody>
           {products?.map((item, index) =>
             <ProductRowComponent params={item} key={index}
-              removeCallback={() => setProducts(products?.filter(val => val !== item))} />)}
+              removeCallback={() => setProducts(products?.filter(val => val !== item))} />
+          )}
         </tbody>
       </table>
     );

@@ -21,11 +21,12 @@ class Product extends Model
     ];
 
     protected $appends = [
-        "category_name", "primary_image",
+        "category_name",
+        "primary_image",
     ];
 
     protected $hidden = [
-        "category", "created_at", "updated_at",
+        "created_at", "updated_at", "category",
     ];
 
     public function images(): HasMany
@@ -41,7 +42,7 @@ class Product extends Model
     public function getCategoryNameAttribute(): string
     {
         try {
-            return Category::findOrFail($this["category_id"])->name;
+            return $this->category->name;
         } catch (ModelNotFoundException) {
             return "";
         }

@@ -1,13 +1,13 @@
-import { object, number, string, mixed, InferType } from 'yup';
+import { object, number, string, mixed, InferType, array } from 'yup';
 import { ERROR_MESSAGES, IApiImage, MAX_FILE_SIZE } from './common';
 
 // multi-file picture validations
 const picTest = (value: any) => {
-    if (value instanceof FileList) {
+    if (value instanceof FileList || value instanceof Array) {
         // Перевірка на тип обраного файлу - допустимий тип jpeg, png, gif
         const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
         for (const file of value) {
-            if (!allowedTypes.includes(file.type)) {
+            if (!(file instanceof File) || !allowedTypes.includes(file.type)) {
                 return false;
             }
         }
@@ -16,12 +16,12 @@ const picTest = (value: any) => {
     else if (value === null || value === undefined) return true;
     return false;
 }, sizeTest = (value: any) => {
-    if (!(value instanceof FileList) || value.length === 0)
+    if (!(value instanceof FileList || value instanceof Array) || value.length === 0)
         return true; // attachment is optional
 
     // if attached, check every file
     for (const file of value) {
-        if (file.size > MAX_FILE_SIZE)
+        if (!(file instanceof File) || file.size > MAX_FILE_SIZE)
             return false;
     }
 
@@ -54,9 +54,10 @@ export const productCreateSchema = object({
 // schema.shape is used to create a new schema based on the other one
 export const productUpdateSchema = productCreateSchema.shape({
     images: imgValidation.nullable(),
+    // remove_images: array().of(number().min(0).integer().required()).nullable(),
 });
 
-export type IProductCreateModel = InferType<typeof productUpdateSchema>;
+export type IProductUpdateModel = InferType<typeof productUpdateSchema>;
 
 export interface IProductReadModel {
     get id(): number;
@@ -65,11 +66,11 @@ export interface IProductReadModel {
     get description(): string;
     get category_id(): number;
     get category_name(): string;
-    get primary_image(): IApiImage | null | undefined;
+    get primary_image(): IApiImage;
     get images(): IApiImage[],
 }
 
-export const emptyProduct: IProductCreateModel = {
+export const emptyProduct: IProductUpdateModel = {
     id: null,
     name: "",
     price: 0,

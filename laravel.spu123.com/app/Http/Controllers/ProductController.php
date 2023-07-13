@@ -32,6 +32,7 @@ class ProductController extends Controller
             'price'=>'required|numeric|min:0',
             'description'=>'required|string|max:4000',
             'images' => 'array',
+//            'remove_images' => 'array',
             'category_id' => 'required|integer|min:0',
         ], $rules);
     }
@@ -124,7 +125,7 @@ class ProductController extends Controller
 
             // updating and sending the updated product
              $product->update($input);
-             return $this->JsonResponse(Product::findOrFail($id)); // send updated data
+             return $this->JsonResponse($product->fresh()); // send updated data
         }
         catch (ModelNotFoundException) {
             return $this->ModelNotFoundResponse();
@@ -134,9 +135,9 @@ class ProductController extends Controller
     public function delete($id): JsonResponse
     {
         try {
-            $category = Product::findOrFail($id);
-            $category->delete();
-            return $this->JsonResponse("Ok");
+            $product = Product::findOrFail($id);
+            $product->delete();
+            return $this->JsonResponse("Product deleted successfully");
         }
         catch (ModelNotFoundException) {
             return $this->ModelNotFoundResponse();
