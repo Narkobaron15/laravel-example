@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use Intervention\Image\Facades\Image;
+use App\Models\Product;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,12 +13,13 @@ use Validator;
 class CategoryController extends Controller
 {
     // Code for model validation
-    protected function ValidateCategory(Array $input) {
+    protected function ValidateCategory(array $input)
+    {
         $rules = [
-            'name.required'=>'Вкажіть назву категорії',
+            'name.required' => 'Вкажіть назву категорії',
             // image is not required because it won't be validated correctly on update
             // 'image.required'=>'Вкажіть фото категорії',
-            'description.required'=>'Вкажіть опис категорії',
+            'description.required' => 'Вкажіть опис категорії',
             'name.max' => 'Поле занадто довге',
             'description.max' => 'Поле занадто довге',
             'image.mimes' => 'Виберіть картинку формату jpeg, jpg, png або gif',
@@ -27,13 +28,14 @@ class CategoryController extends Controller
 
         // validate using validator
         return Validator::make($input, [
-            'name'=>'required|string|max:200',
-            'image'=>'mimes:jpeg,jpg,png,gif|max:50000',
-            'description'=>'required|string|max:4000',
+            'name' => 'required|string|max:200',
+            'image' => 'mimes:jpeg,jpg,png,gif|max:50000',
+            'description' => 'required|string|max:4000',
         ], $rules);
     }
 
     // Swagger commentary
+
     /**
      * @OA\Get(
      *     tags={"Category"},
@@ -48,6 +50,7 @@ class CategoryController extends Controller
     }
 
     // Swagger commentary
+
     /**
      * @OA\Post(
      *     tags={"Category"},
@@ -81,7 +84,7 @@ class CategoryController extends Controller
         $input = $request->all();
         // validating form data
         $validation = $this->ValidateCategory($input);
-        if($validation->fails()){
+        if ($validation->fails()) {
             // sending 'error' response
             return $this->JsonResponse($validation->errors(), Response::HTTP_BAD_REQUEST);
         }
@@ -95,6 +98,7 @@ class CategoryController extends Controller
     }
 
     // Swagger commentary
+
     /**
      * @OA\Get(
      *     tags={"Category"},
@@ -126,13 +130,13 @@ class CategoryController extends Controller
         try {
             $category = Category::findOrFail($id);
             return $this->JsonResponse($category);
-        }
-        catch (ModelNotFoundException) {
+        } catch (ModelNotFoundException) {
             return $this->ModelNotFoundResponse();
         }
     }
 
     // Swagger commentary
+
     /**
      * @OA\Post(
      *     tags={"Category"},
@@ -180,7 +184,7 @@ class CategoryController extends Controller
 
             // validating form data
             $validation = $this->ValidateCategory($input);
-            if($validation->fails()){
+            if ($validation->fails()) {
                 // sending 'error' response
                 return $this->JsonResponse($validation->errors(), Response::HTTP_BAD_REQUEST);
             }
@@ -195,13 +199,13 @@ class CategoryController extends Controller
             // updating and sending the updated category
             $category->update($input);
             return $this->JsonResponse(Category::findOrFail($id)); // send updated data
-        }
-        catch (ModelNotFoundException) {
+        } catch (ModelNotFoundException) {
             return $this->ModelNotFoundResponse();
         }
     }
 
     // Swagger commentary
+
     /**
      * @OA\Delete(
      *     path="/api/categories/{id}",
@@ -234,10 +238,22 @@ class CategoryController extends Controller
     {
         try {
             $category = Category::findOrFail($id);
+
+            $this->UnlinkImage($category->image);
+            $products = Product::where('category_id', $id)->get();
+            if (is_countable($products)) {
+                foreach ($products as $p) {
+                    foreach ($p->images as $img) {
+                        $this->UnlinkImage($img->name);
+                        $img->delete();
+                    }
+                    $p->delete();
+                }
+            }
             $category->delete();
+
             return $this->JsonResponse("Ok");
-        }
-        catch (ModelNotFoundException) {
+        } catch (ModelNotFoundException) {
             return $this->ModelNotFoundResponse();
         }
     }

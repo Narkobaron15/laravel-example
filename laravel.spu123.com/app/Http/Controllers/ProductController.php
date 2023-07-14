@@ -13,11 +13,12 @@ use Validator;
 class ProductController extends Controller
 {
     // Code for model validation
-    protected function ValidateProduct(Array $input) {
+    protected function ValidateProduct(array $input)
+    {
         $rules = [
-            'name.required'=>'Вкажіть назву продукту',
-            'price.required'=>'Вкажіть ціну продукту',
-            'description.required'=>'Вкажіть опис продукту',
+            'name.required' => 'Вкажіть назву продукту',
+            'price.required' => 'Вкажіть ціну продукту',
+            'description.required' => 'Вкажіть опис продукту',
             'price.min' => 'Ціна не може бути менше за 0',
             'price.number' => 'Ціна має бути числовим значенням',
             'name.max' => 'Поле занадто довге',
@@ -28,11 +29,11 @@ class ProductController extends Controller
         ];
 
         return Validator::make($input, [
-            'name'=>'required|string|max:200',
-            'price'=>'required|numeric|min:0',
-            'description'=>'required|string|max:4000',
+            'name' => 'required|string|max:200',
+            'price' => 'required|numeric|min:0',
+            'description' => 'required|string|max:4000',
             'images' => 'array',
-//            'images_to_remove' => 'array',
+            'remove_images' => 'array',
             'category_id' => 'required|integer|min:0',
         ], $rules);
     }
@@ -49,7 +50,7 @@ class ProductController extends Controller
         $input = $request->all();
         // validating form data
         $validation = $this->ValidateProduct($input);
-        if($validation->fails()) {
+        if ($validation->fails()) {
             // sending 'error' response
             return $this->JsonResponse($validation->errors(), Response::HTTP_BAD_REQUEST);
         }
@@ -79,8 +80,7 @@ class ProductController extends Controller
         try {
             $product = Product::findOrFail($id);
             return $this->JsonResponse($product);
-        }
-        catch (ModelNotFoundException) {
+        } catch (ModelNotFoundException) {
             return $this->ModelNotFoundResponse();
         }
     }
@@ -95,39 +95,41 @@ class ProductController extends Controller
 
             // validating form data
             $validation = $this->ValidateProduct($input);
-            if ($validation->fails()){
+            if ($validation->fails()) {
                 // sending 'error' response
                 return $this->JsonResponse($validation->errors(), 400);
             }
 
             // extracting product's images and storing locally if there is any
             $imagePaths = $this->SaveImagesToPaths($request);
-            // checking if there is any
-            if (count($imagePaths) > 0) {
-                // deleting previous images
-                foreach ($product->images as $img) {
-                    $this->UnlinkImage($img->name);
-                    $img->delete();
-                }
+            // deleting previous images
 
-                // saving them to db
-                $i = 0;
-                foreach ($imagePaths as $p) {
-                    ProductImage::create([
-                        "name" => $p,
-                        "product_id" => $product["id"],
-                        "priority" => $i,
-                    ]);
-
-                    $i += 1;
+            if (is_countable($request["remove_images"])){
+                $prev_images = ProductImage::whereIn('id', $request["remove_images"])->get();
+                $intersected_images = $product->images->intersect($prev_images);
+                if (is_countable($intersected_images)) {
+                    foreach ($intersected_images as $img) {
+                        $this->UnlinkImage($img->name);
+                        $img->delete();
+                    }
                 }
             }
 
+            // saving them to db
+            $i = 0;
+            foreach ($imagePaths as $p) {
+                ProductImage::create([
+                    "name" => $p,
+                    "product_id" => $product["id"],
+                    "priority" => $i,
+                ]);
+                $i += 1;
+            }
+
             // updating and sending the updated product
-             $product->update($input);
-             return $this->JsonResponse(Product::findOrFail($id)); // send updated data
-        }
-        catch (ModelNotFoundException) {
+            $product->update($input);
+            return $this->JsonResponse($product->fresh()); // send updated data
+        } catch (ModelNotFoundException) {
             return $this->ModelNotFoundResponse();
         }
     }
@@ -135,11 +137,14 @@ class ProductController extends Controller
     public function delete($id): JsonResponse
     {
         try {
-            $category = Product::findOrFail($id);
-            $category->delete();
-            return $this->JsonResponse("Ok");
-        }
-        catch (ModelNotFoundException) {
+            $product = Product::findOrFail($id);
+            foreach ($product->images as $img) {
+                $this->UnlinkImage($img->name);
+                $img->delete();
+            }
+            $product->delete();
+            return $this->JsonResponse("Product deleted successfully");
+        } catch (ModelNotFoundException) {
             return $this->ModelNotFoundResponse();
         }
     }

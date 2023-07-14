@@ -14,7 +14,9 @@ export const ERROR_MESSAGES = {
 export const MAX_FILE_SIZE = 50_000_000; // 50 MB
 
 export interface IApiImage {
-    get priority(): number | null | undefined
+    get id(): number,
+    get name(): string,
+    get priority(): number,
     get xs(): string,
     get sm(): string,
     get md(): string,

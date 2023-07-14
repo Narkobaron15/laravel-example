@@ -15,12 +15,20 @@ class ProductImage extends Model
 {
     use HasFactory;
 
+    /**
+     * Custom properties for this eloquent model
+     * @var string[]
+     */
     protected $fillable = [
         "product_id", "name", "priority",
     ];
 
+    /**
+     * Properties that shouldn't be publicly visible
+     * @var string[]
+     */
     protected $hidden = [
-        "name", "created_at", "updated_at", "id", "product_id",
+        "created_at", "updated_at", "product_id",
     ];
 
     /**

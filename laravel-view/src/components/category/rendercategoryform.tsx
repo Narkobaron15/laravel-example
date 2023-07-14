@@ -87,7 +87,11 @@ export default function RenderCategoryCUForm({ initialVals, validationSchema, fo
                         </div>
                         <label htmlFor="image" className="md:w-10/12 flex justify-between p-0">
                             <img className="h-16 w-16 object-cover rounded-full inline-block" alt="Current category"
-                                src={values.image instanceof File && !errors.image ? URL.createObjectURL(values.image) : (initImg ?? defaultPic)} />
+                                src={
+                                    values.image instanceof File && !errors.image
+                                        ? URL.createObjectURL(values.image)
+                                        : (initImg ?? defaultPic)
+                                } />
                             <span className="sr-only">Choose a category photo</span>
                             <input type="file" className="file w-5/6" id="image" name="image" onChange={e => {
                                 // input stores an array of attachments
@@ -105,7 +109,7 @@ export default function RenderCategoryCUForm({ initialVals, validationSchema, fo
                     </div>
                     {getErrorComponents(errors, touched, "image")}
                     <div className="flex justify-center">
-                        <button type="submit">{updating ? `Оновити` : `Додати`}</button>
+                        <button className="form-button" type="submit">{updating ? `Оновити` : `Додати`}</button>
                     </div>
                 </Form>
             )}

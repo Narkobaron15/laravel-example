@@ -7,11 +7,11 @@ import APP_ENV from "./env/app_env";
  * constructing full path, to the server (baseURL), 
  * with provided defaults (like headers)
  */
-const http_common = axios.create({
+const api_common = axios.create({
     baseURL: APP_ENV.BASE_URL,
     headers: {
         "Content-Type": "application/json"
     }
 });
 
-export default http_common;
+export default api_common;

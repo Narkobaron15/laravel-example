@@ -5,9 +5,10 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 
 import { IProductReadModel } from "../../../models/product";
-import http_common from "../../../http_common";
+import api_common from "../../../api_common";
 import arrowimg from '../../../assets/arrow.svg'
 import { callErrorToast } from "../../errortoast";
+import PriceToString from "../../../utilities/pricetostr";
 
 export default function ProductDetails() {
     const { id } = useParams();
@@ -15,7 +16,7 @@ export default function ProductDetails() {
     const [product, setProduct] = React.useState<IProductReadModel>();
 
     React.useEffect(() => {
-        http_common.get(`/api/products/${id}`)
+        api_common.get(`/products/${id}`)
             .then(r => setProduct(r.data))
             .catch(e => {
                 callErrorToast(e);
@@ -40,7 +41,7 @@ export default function ProductDetails() {
                 ))}
             </Carousel>
             <h1 className="text-left font-semibold mb-1">{product?.name ?? "Loading..."}</h1>
-            <h3 className="text-6xl font-bold mb-10">{product !== undefined ? `$` + product.price : ``}</h3>
+            <h3 className="text-6xl font-bold mb-10">{PriceToString(product?.price)}</h3>
             {/* Attributes, location placeholder */}
             <p className="text-lg">{product?.description}</p>
         </article>
