@@ -1,6 +1,6 @@
 import React from "react";
 
-import http_common from "../../../http_common";
+import api_common from "../../../api_common";
 import { ICategoryReadModel } from "../../../models/category"
 import { Link } from "react-router-dom";
 import ShortenString from "../../../utilities/shortenstring";
@@ -24,13 +24,13 @@ export default function Category({ params, removeCallback }: CategoryArgs) {
             <td>{ShortenString(params.description, MAX_DESCRIPTION_LENGTH)}</td>
             <td>
                 {/* Edit button */}
-                <Link to={`/categories/edit/${params.id}`} className="tailwind-btn" >
+                <Link to={`/categories/edit/${params.id}`} className="tailwind-btn">
                     <i className="fa-solid fa-pen-to-square"></i>
                 </Link>
 
                 {/* Delete button */}
                 <button className="tailwind-btn ml-1" onClick={async () => {
-                    await http_common.delete(`/api/categories/${params.id}`);
+                    await api_common.delete(`/categories/${params.id}`);
                     removeCallback();
                 }}>
                     <i className="fa-regular fa-trash-can"></i>

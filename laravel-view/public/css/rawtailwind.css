@@ -41,19 +41,19 @@
 }
 
 @layer components {
-    nav {
+    header nav {
         @apply bg-white border-gray-200 dark:bg-gray-900;
     }
 
-    nav button {
+    header nav button {
         @apply inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600;
     }
 
-    nav ul {
+    header nav ul {
         @apply font-medium text-sm flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700;
     }
 
-    nav a {
+    header nav a {
         @apply block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent;
     }
 
@@ -61,36 +61,28 @@
         @apply bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500;
     }
 
-    form button {
-        @apply shadow bg-purple-500 hover:bg-purple-400 focus:outline-none text-black font-bold py-2 px-4 rounded;
+    .form-button {
+        @apply shadow bg-purple-500 hover:bg-purple-400 focus:outline-none text-black font-bold py-2 px-4 rounded disabled:text-gray-600 disabled:bg-purple-300;
     }
 
     .title-logo {
         @apply self-center text-2xl font-semibold whitespace-nowrap dark:text-white;
     }
-
-    .error-text {
-        @apply text-red-600 -mt-3 mb-6;
-    }
-
-    input.file {
+    
+    input[type="file"] {
         @apply text-sm text-slate-500 file:mr-4 file:py-3 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100;
-    }
-
-    .category-pic {
-        @apply rounded-full w-16 h-16 object-cover;
     }
 
     .tailwind-btn {
         @apply px-4 py-2 font-semibold text-sm bg-blue-400 hover:bg-blue-500 active:bg-blue-600 text-white rounded-full shadow-sm;
     }
 
-    .attached-images img {
-        @apply object-contain w-20 h-20;
+    .file {
+        @apply inline-flex mr-4 mb-3 px-4 border rounded border-gray-400 bg-gray-200;
     }
 
     .card {
-        @apply w-full sm:w-5/12 md:w-3/12 lg:max-w-xs mb-8 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700;
+        @apply w-full sm:w-5/12 md:mx-4 lg:w-3/12 lg:max-w-xs mb-8 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700;
     }
 
     .card .primary-img {
@@ -112,11 +104,6 @@
     .tailwind-btn-dark {
         @apply inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800;
     }
-
-    img.slider-img {
-        max-height: 500px;
-        @apply object-contain;
-    }
 }
 
 @layer utilities {
@@ -131,4 +118,22 @@
     .carousel-container {
         @apply flex justify-center bg-gray-400;
     }
+
+    img.slider-img {
+        max-height: 500px;
+        @apply object-contain;
+    }
+
+    .file img {
+        @apply object-cover w-12 h-12;
+    }
+
+    .category-pic {
+        @apply rounded-full w-16 h-16 object-cover;
+    }
+
+    .error-text {
+        @apply text-red-600 -mt-3 mb-6;
+    }
+
 }

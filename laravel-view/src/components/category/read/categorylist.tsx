@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 
 import { ICategoryReadModel } from "../../../models/category";
 import Category from "./category";
-import http_common from "../../../http_common";
+import api_common from "../../../api_common";
 import { callErrorToast } from "../../errortoast";
 
 export default function CategoryList() {
   const [items, setList] = useState<ICategoryReadModel[]>();
   useEffect(() => {
-    http_common.get(`/api/categories`)
+    api_common.get(`/categories`)
       .then(r => setList(r.data))
       .catch(callErrorToast);
   }, []);

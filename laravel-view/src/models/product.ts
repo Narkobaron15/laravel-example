@@ -1,22 +1,22 @@
-import { object, number, string, mixed, InferType, array } from 'yup';
+import { object, number, string, InferType, array } from 'yup';
 import { ERROR_MESSAGES, IApiImage, MAX_FILE_SIZE } from './common';
 
 // multi-file picture validations
-const picTest = (value: any) => {
-    if (value instanceof FileList || value instanceof Array) {
-        // Перевірка на тип обраного файлу - допустимий тип jpeg, png, gif
-        const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
-        for (const file of value) {
-            if (!(file instanceof File) || !allowedTypes.includes(file.type)) {
-                return false;
-            }
+const picTest = (value?: any[] | null | undefined) => {
+    if (value === null || value === undefined || value.length === 0)
+        return true; // attachment is optional
+
+    // File type check (allowed types - jpeg, png, gif)
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+    for (const file of value) {
+        if (!(file instanceof File) || !allowedTypes.includes(file.type)) {
+            return false;
         }
-        return true;
     }
-    else if (value === null || value === undefined) return true;
-    return false;
-}, sizeTest = (value: any) => {
-    if (!(value instanceof FileList || value instanceof Array) || value.length === 0)
+
+    return true;
+}, sizeTest = (value?: any[] | null | undefined) => {
+    if (value === null || value === undefined || value.length === 0)
         return true; // attachment is optional
 
     // if attached, check every file
@@ -26,9 +26,11 @@ const picTest = (value: any) => {
     }
 
     return true;
+}, img_required = (value?: any[] | null | undefined) => {
+    return (value instanceof FileList || value instanceof Array) && value.length > 0;
 };
 
-const imgValidation = mixed()
+const imgValidation = array()
     .test("fileType", ERROR_MESSAGES.NOT_A_PICTURE, picTest)
     .test("fileSize", ERROR_MESSAGES.FILE_TOO_LARGE, sizeTest);
 
@@ -49,20 +51,22 @@ export const productCreateSchema = object({
     description: string()
         .max(4000, ERROR_MESSAGES.TOO_LARGE)
         .required(ERROR_MESSAGES.REQUIRED),
-    images: imgValidation.required(ERROR_MESSAGES.IMG_REQUIRED),
+    images: imgValidation/*.required(ERROR_MESSAGES.IMG_REQUIRED)*/
+        .test("Required", ERROR_MESSAGES.IMG_REQUIRED, img_required),
 });
 // schema.shape is used to create a new schema based on the other one
 export const productUpdateSchema = productCreateSchema.shape({
     images: imgValidation.nullable(),
-    // remove_images: array().of(number().min(0).integer().required()).nullable(),
+    remove_images: array().of(number().min(0).integer().required()).nullable(),
 });
 
+export type IProductCreateModel = InferType<typeof productCreateSchema>;
 export type IProductUpdateModel = InferType<typeof productUpdateSchema>;
 
 export interface IProductReadModel {
     get id(): number;
     get name(): string;
-    get price(): string;
+    get price(): number;
     get description(): string;
     get category_id(): number;
     get category_name(): string;
@@ -70,10 +74,11 @@ export interface IProductReadModel {
     get images(): IApiImage[],
 }
 
-export const emptyProduct: IProductUpdateModel = {
+export const emptyProduct: IProductCreateModel = {
     id: null,
     name: "",
     price: 0,
     category_id: 0,
     description: "",
+    images: [],
 };

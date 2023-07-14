@@ -36,12 +36,15 @@ class Controller extends BaseController
         return response()->json($data, $status,
             ['Content-Type' => 'application/json;charset=UTF-8', 'Charset' => 'utf-8'], JSON_PRETTY_PRINT);
     }
-    protected function ModelNotFoundResponse() : JsonResponse {
+
+    protected function ModelNotFoundResponse(): JsonResponse
+    {
         return $this->JsonResponse(['message' => 'Not found', "status" => Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
     }
 
     // Add a single image
-    protected function SaveImageToPath(Request $request): string | null {
+    protected function SaveImageToPath(Request $request): string|null
+    {
         if ($request->hasFile('image')) {
             // get image
             $image = $request->file('image');
@@ -78,7 +81,8 @@ class Controller extends BaseController
         return $paths;
     }
 
-    private function ValidateImg(Mixed $image) {
+    private function ValidateImg(Mixed $image)
+    {
         $rules = [
             'image.required' => 'Загрузіть фото',
             'image.mimes' => 'Виберіть картинку формату jpeg, jpg, png або gif',
@@ -89,19 +93,19 @@ class Controller extends BaseController
     }
 
     // Code for image addition
-    private function SaveImgCore(Mixed $image): string {
+    private function SaveImgCore(Mixed $image): string
+    {
         // Generate a unique filename
         $filename = uniqid() . '.' . $image->getClientOriginalExtension();
 
         // for each of sizes, create resized image and generate common file name
         // {size}_{$filename}
         $sizes = [50, 150, 300, 600, 1200];
-        foreach ($sizes as $size)
-        {
-            $fileSave = $size.'_'.$filename; // picture's name
+        foreach ($sizes as $size) {
+            $fileSave = $size . '_' . $filename; // picture's name
             // Resize the image while maintaining aspect ratio
             $resizedImage = Image::make($image)->resize($size, null,
-                fn ($constraint) => $constraint->aspectRatio() // arrow function syntax
+                fn($constraint) => $constraint->aspectRatio() // arrow function syntax
             )->encode();
             // Save the resized image to $path
             $path = public_path('uploads/' . $fileSave);
