@@ -1,2 +1,2 @@
-# laravel-sample
+# laravel-example
  My first laravel project
